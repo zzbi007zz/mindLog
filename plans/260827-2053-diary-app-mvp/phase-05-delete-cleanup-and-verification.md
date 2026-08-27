@@ -76,11 +76,11 @@ the DAO, then sweep). Cheap for MVP volume; backstops any missed deletion.
 
 ## Success Criteria
 
-- [ ] All 9 verification-matrix rows pass on the `diary_api36` emulator.
-- [ ] Instrumented tests for delete cleanup, edit-remove cleanup, and orphan sweep pass.
-- [ ] No orphaned files remain after any delete/edit in manual testing.
-- [ ] `README.md` documents build/run + offline/on-device guarantees.
-- [ ] Every `plan.md` Success Criterion is checked and evidenced.
+- [x] All 9 verification-matrix rows pass on the `diary_api36` emulator.
+- [x] Instrumented tests for delete cleanup, edit-remove cleanup, and orphan sweep pass.
+- [x] No orphaned files remain after any delete/edit in manual testing.
+- [x] `README.md` documents build/run + offline/on-device guarantees.
+- [x] Every `plan.md` Success Criterion is checked and evidenced.
 
 ## Risk Assessment
 

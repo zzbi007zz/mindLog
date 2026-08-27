@@ -44,9 +44,9 @@ class DiaryRepositoryTest {
         db.close()
     }
 
-        private fun makeImageFile(content: String): Uri {
+    private fun makeImageFile(content: String): Uri {
         val f = File.createTempFile("diary-test", ".jpg", context.cacheDir)
-                f.writeBytes(content.toByteArray())
+        f.writeBytes(content.toByteArray())
         return Uri.fromFile(f)
     }
 
@@ -132,5 +132,27 @@ class DiaryRepositoryTest {
     fun observeEntry_returnsNull_whenMissing() = runBlocking {
         assertNull(repository.observeEntry(999L).first())
         assertNotNull(repository.observeEntries().first())
+    }
+
+    @Test
+    fun sweepOrphans_removesUnreferencedButKeepsReferenced() = runBlocking {
+        // Create an entry with one referenced image.
+        val id = repository.upsertEntry(
+            EntryDraft(title = "t", body = "b", images = listOf(ImageRef.New(makeImageFile("keep"))))
+        )
+        val entry = repository.observeEntry(id).first()!!
+        val referenced = entry.images[0].path
+
+        // Drop a stray, unreferenced file directly into images/.
+        val stray = File(storage.fileFor(referenced).parentFile, "stray.jpg")
+        stray.writeBytes(byteArrayOf(1))
+        assertEquals("stored image verifiable", "keep", storage.fileFor(referenced).readText())
+        assertTrue("stray written", stray.exists())
+
+        // Sweep with only the referenced set (not the DB-derived set).
+        storage.sweepOrphans(setOf(referenced))
+
+        assertTrue("referenced file kept", storage.fileFor(referenced).exists())
+        assertFalse("stray file removed", stray.exists())
     }
 }

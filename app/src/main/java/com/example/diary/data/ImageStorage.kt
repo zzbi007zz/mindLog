@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import java.io.File
 import java.io.FileInputStream
-import java.io.IOException
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,6 +18,13 @@ interface ImageStorage {
 
     /** Resolves a relative path to a [File] (for Coil loading). */
     fun fileFor(relativePath: String): File
+
+    /**
+     * Deletes every file under `images/` whose relative path is not in
+     * [referencedPaths] — the startup backstop against orphans. Only files in
+     * the images subdir are considered; other app files are untouched.
+     */
+    suspend fun sweepOrphans(referencedPaths: Set<String>)
 }
 
 class LocalImageStorage(private val context: Context) : ImageStorage {
@@ -48,7 +54,18 @@ class LocalImageStorage(private val context: Context) : ImageStorage {
 
     override fun fileFor(relativePath: String): File = File(context.filesDir, relativePath)
 
+    override suspend fun sweepOrphans(referencedPaths: Set<String>) = withContext(Dispatchers.IO) {
+        val imagesDir = File(context.filesDir, IMAGES_SUBDIR)
+        if (!imagesDir.exists()) return@withContext
+        imagesDir.listFiles()?.forEach { file ->
+            if (file.isFile) {
+                val rel = "$IMAGES_SUBDIR/${file.name}"
+                if (rel !in referencedPaths) file.delete()
+            }
+        }
+    }
+
     private companion object {
-        const val IMAGES_SUBDIR = "images"
+        private const val IMAGES_SUBDIR = "images"
     }
 }
