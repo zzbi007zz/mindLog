@@ -27,7 +27,5 @@ class DiaryApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = DiaryAppContainer(this)
-        // TEMP Phase-3 debug seed — removed in Phase 4/5 when the editor exists.
-        Phase3Seed.seedIfEmpty(this, container.repository)
     }
 }

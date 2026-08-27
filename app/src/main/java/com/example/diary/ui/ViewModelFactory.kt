@@ -1,10 +1,9 @@
 package com.example.diary.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.diary.DiaryAppContainer
-import com.example.diary.data.DiaryRepository
 import com.example.diary.ui.entry.detail.EntryDetailViewModel
+import com.example.diary.ui.entry.editor.EntryEditorViewModel
 import com.example.diary.ui.entry.list.EntryListViewModel
 
 /**
@@ -19,6 +18,9 @@ object ViewModelFactory {
 
     fun detail(container: DiaryAppContainer, entryId: Long): ViewModelProviderFactory<EntryDetailViewModel> =
         factory { EntryDetailViewModel(container.repository, entryId) }
+
+    fun editor(container: DiaryAppContainer, entryId: Long?): ViewModelProviderFactory<EntryEditorViewModel> =
+        factory { EntryEditorViewModel(container.repository, entryId) }
 
     private fun <VM : ViewModel> factory(create: () -> VM): ViewModelProviderFactory<VM> =
         ViewModelProviderFactory(create)

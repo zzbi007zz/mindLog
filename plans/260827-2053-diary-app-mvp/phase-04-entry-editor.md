@@ -68,12 +68,12 @@ new/updated entry appears without manual refresh.
 
 ## Success Criteria
 
-- [ ] From FAB: create an entry with title, body, 2 images → appears in list newest-first with thumbnail.
-- [ ] Open it in detail → text + both images render.
-- [ ] Edit it: change body, remove 1 image, add 1 → detail reflects all three changes.
-- [ ] Save disabled while a save is in flight; no duplicate rows on double-tap.
-- [ ] Back with unsaved changes prompts confirm; discard leaves data unchanged.
-- [ ] No media/storage permission appears in the manifest (Photo Picker only).
+- [x] From FAB: create an entry with title, body, 2 images → appears in list newest-first with thumbnail.
+- [x] Open it in detail → text + both images render.
+- [x] Edit it: change body, remove 1 image, add 1 → detail reflects all three changes.
+- [x] Save disabled while a save is in flight; no duplicate rows on double-tap.
+- [x] Back with unsaved changes prompts confirm; discard leaves data unchanged.
+- [x] No media/storage permission appears in the manifest (Photo Picker only).
 
 ## Risk Assessment
 
