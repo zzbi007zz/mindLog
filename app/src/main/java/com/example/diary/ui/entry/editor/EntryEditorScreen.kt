@@ -142,7 +142,7 @@ fun EntryEditorScreen(
                             image = image,
                             imageStorage = imageStorage,
                             onRemove = { viewModel.onRemoveImage(index) },
-                            modifier = Modifier.weight(1f).aspectRatio(1f),
+                                                        modifier = Modifier.size(104.dp),
                         )
                     }
                 }
