@@ -7,15 +7,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.diary.data.ImageStorage
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun EntryEditorScreen(
     viewModel: EntryEditorViewModel,
@@ -133,19 +131,17 @@ fun EntryEditorScreen(
             )
 
             if (uiState.images.isNotEmpty()) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(top = 16.dp),
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    items(uiState.images, key = ::stagedIdentity) { image ->
-                        val index = uiState.images.indexOf(image)
+                    uiState.images.forEachIndexed { index, image ->
                         StagedImageCell(
                             image = image,
                             imageStorage = imageStorage,
                             onRemove = { viewModel.onRemoveImage(index) },
+                            modifier = Modifier.weight(1f).aspectRatio(1f),
                         )
                     }
                 }
@@ -173,8 +169,9 @@ private fun StagedImageCell(
     image: StagedImage,
     imageStorage: ImageStorage,
     onRemove: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(Modifier.aspectRatio(1f)) {
+    Box(modifier) {
         val model = when (image) {
             is StagedImage.Stored -> imageStorage.fileFor(image.path)
             is StagedImage.New -> image.uri
@@ -197,10 +194,4 @@ private fun StagedImageCell(
             )
         }
     }
-}
-
-// Stable lazy-grid key per staged image (path / uri are unique).
-private fun stagedIdentity(image: StagedImage): String = when (image) {
-    is StagedImage.Stored -> "stored-${image.path}"
-    is StagedImage.New -> "new-${image.uri}"
 }
