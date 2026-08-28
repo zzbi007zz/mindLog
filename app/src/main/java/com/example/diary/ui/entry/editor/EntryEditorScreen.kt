@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -128,16 +127,11 @@ fun EntryEditorScreen(
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier.fillMaxWidth(),
             )
-            OutlinedTextField(
-                value = uiState.body,
-                onValueChange = viewModel::onBodyChange,
-                label = { Text("Body") },
-                minLines = 6,
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-            )
 
             if (uiState.images.isNotEmpty()) {
+                // Photo-first mode: the gallery sits here, and the note field
+                // appears below it. The top "Body" section is hidden so photos
+                // never crowd text.
                 FlowRow(
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -152,6 +146,23 @@ fun EntryEditorScreen(
                         )
                     }
                 }
+                OutlinedTextField(
+                    value = uiState.body,
+                    onValueChange = viewModel::onBodyChange,
+                    label = { Text("Note") },
+                    minLines = 6,
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                )
+            } else {
+                OutlinedTextField(
+                    value = uiState.body,
+                    onValueChange = viewModel::onBodyChange,
+                    label = { Text("Body") },
+                    minLines = 6,
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                )
             }
         }
     }
