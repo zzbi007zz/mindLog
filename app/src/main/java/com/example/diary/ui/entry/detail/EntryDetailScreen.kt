@@ -3,7 +3,6 @@ package com.example.diary.ui.entry.detail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,8 +15,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.diary.data.ImageStorage
-import com.example.diary.ui.common.timeLabel
+import com.example.diary.ui.common.fullDateLabel
 import com.example.diary.ui.entry.ImageThumbnail
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,9 +46,8 @@ fun EntryDetailScreen(
     modifier: Modifier = Modifier,
 ) {
     val entry by viewModel.entry.collectAsState()
-    val time = entry?.let { timeLabel(it.createdAt) }
+    val date = entry?.let { fullDateLabel(it.createdAt) }
 
-    // One-shot delete completion → navigate back.
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             if (event is EntryDetailEvent.Deleted) onChange()
@@ -58,9 +56,10 @@ fun EntryDetailScreen(
 
     Scaffold(
         modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(entry?.title?.ifEmpty { "Untitled" } ?: "") },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -97,30 +96,34 @@ fun EntryDetailScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
             ) {
-                Text(
-                    text = entry?.title ?: "",
-                    style = MaterialTheme.typography.headlineMedium,
-                )
-                time?.let {
+                date?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp),
                     )
                 }
+                Text(
+                    text = e.title.ifEmpty { "Untitled" },
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
                 if (e.body.isNotEmpty()) {
                     Text(
                         text = e.body,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            lineHeight = MaterialTheme.typography.bodyLarge.lineHeight,
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(top = 16.dp),
                     )
                 }
                 if (e.images.isNotEmpty()) {
                     LazyRow(
-                        contentPadding = PaddingValues(top = 16.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 20.dp, bottom = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
@@ -128,8 +131,8 @@ fun EntryDetailScreen(
                             ImageThumbnail(
                                 imageStorage = imageStorage,
                                 relativePath = image.path,
-                                modifier = Modifier.width(160.dp).height(160.dp),
-                                cornerRadius = 12.dp,
+                                modifier = Modifier.width(176.dp).height(176.dp),
+                                cornerRadius = 16.dp,
                             )
                         }
                     }
